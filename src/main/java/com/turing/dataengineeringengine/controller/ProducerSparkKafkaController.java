@@ -7,6 +7,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,8 @@ public class ProducerSparkKafkaController {
 
 	private final Producer producer;
 	private final StorageService storageService;
+	@Value("${spark.driver.memory}")
+	private String sparkDriverMemory;
 
 	@Autowired
 	ProducerSparkKafkaController(Producer producer, StorageService storageService) {
@@ -49,7 +52,7 @@ public class ProducerSparkKafkaController {
 	public ResponseEntity<String> enterFileForAnalysis(
 			@RequestParam(name = "filename", required = true) String filename) throws JsonProcessingException {
 
-		SparkConf sparkConf = new SparkConf().setAppName("JavaGitHubAnalysis").setMaster("local").set("spark.driver.memory", "481859200");
+		SparkConf sparkConf = new SparkConf().setAppName("JavaGitHubAnalysis").setMaster("local").set("spark.driver.memory", sparkDriverMemory);
 		
 		JavaSparkContext ctx = new JavaSparkContext(sparkConf);
 
