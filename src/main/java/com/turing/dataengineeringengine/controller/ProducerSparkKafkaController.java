@@ -1,13 +1,9 @@
 package com.turing.dataengineeringengine.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,9 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turing.dataengineeringengine.kafta.Producer;
-import com.turing.dataengineeringengine.model.GitHubAccounts;
 import com.turing.dataengineeringengine.service.StorageService;
 
 /**
@@ -32,16 +26,13 @@ public class ProducerSparkKafkaController {
 
 	private final Producer producer;
 	private final StorageService storageService;
-
-	@Value("${spark.driver.memory}")
-	private String sparkMemory;
-
-	@Value("${aws.hostname}")
-	private String awsHostName;
+	
+	public static int gitRepositoriesSize = 0;
 
 	@Autowired
 	ProducerSparkKafkaController(Producer producer, StorageService storageService) {
 		this.producer = producer;
+
 		this.storageService = storageService;
 	}
 
@@ -66,23 +57,21 @@ public class ProducerSparkKafkaController {
 		JavaRDD<String> lines2 = ctx.textFile(System.getProperty("user.dir") + "/src/main/resources/" + filename)
 				.repartition(3);
 
-		int tracker = 0;
+		int tracker = 1;
 
-		List<String> stream = new ArrayList<>();
-
-		ObjectMapper mapper = new ObjectMapper();
+		int sizeOfRepositoryList = lines2.collect().size();
+		
+		
 
 		for (String word : lines2.collect()) {
-			tracker++;
-			if (word.trim().startsWith("http"))
-				stream.add(word);
-			if (tracker % 5 == 0) {
 
-				this.producer.sendMessage(mapper.writeValueAsString(new GitHubAccounts(stream)));
-
-				stream = new ArrayList<>();
+			if (word.startsWith("http")) {
+				String message = tracker + "|" + sizeOfRepositoryList + "|" + word;
+				this.producer.sendMessage(message);
 
 			}
+
+			tracker++;
 
 		}
 
@@ -105,7 +94,8 @@ public class ProducerSparkKafkaController {
 		JavaSparkContext ctx = null;
 
 		SparkConf sparkConf = new SparkConf().setAppName("JavaGitHubAnalysis").setMaster("local")
-				.set("spark.driver.allowMultipleContexts", "true");
+				.set("spark.driver.allowMultipleContexts", "true") ;;
+		//sparkConf.set("spark.driver.host", "localhost");
 
 		ctx = new JavaSparkContext(sparkConf);
 
@@ -120,29 +110,20 @@ public class ProducerSparkKafkaController {
 					.repartition(3);
 
 		}
-
 		
-
-		int tracker = 0;
-
-		List<String> stream = new ArrayList<>();
-
-		ObjectMapper mapper = new ObjectMapper();
+		ProducerSparkKafkaController.gitRepositoriesSize = lines2.collect().size();
 
 		for (String word : lines2.collect()) {
 
-			if (word.trim().startsWith("http")) {
-				stream.add(word);
-				tracker++;
-			}
-			if (tracker % 5 == 0) {
+			if (word.startsWith("http")) {
+				String message = word;
+				this.producer.sendMessage(message);
 
-				this.producer.sendMessage(mapper.writeValueAsString(new GitHubAccounts(stream)));
-
-				stream = new ArrayList<>();
 			}
+
 		}
 
+	
 		ctx.stop();
 
 		return ResponseEntity.ok().body("Files Have Been Successfully processed");

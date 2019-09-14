@@ -9,8 +9,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class Producer {
 
+	
     private static final Logger logger = LoggerFactory.getLogger(Producer.class);
-    private static final String TOPIC = "szghaz9h-users";
+    private static final String TOPIC = "users";
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -18,5 +19,7 @@ public class Producer {
     public void sendMessage(String message) {
         logger.info("Sending Message from producer");
         this.kafkaTemplate.send(TOPIC, message);
+        
+       
     }
 }

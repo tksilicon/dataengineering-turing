@@ -48,7 +48,9 @@ mvn spring-boot:run
 
 curl -v http://localhost:5000/api/getgithubanalysis
 
-The above command will spurn the producer to send all repositories to proceess to the consumer. The processed files in json as expected is found under "src/main/resources/dataset" on local and in on the Linux environment and also AWS - /var/app/current/src/main/resources/dataset/
+The above command will spurn the producer to send all repositories to proceess to the consumer. The processed file results.json is in root folder of consumer in dataset folder.
+
+For testing running the application on localhost which is the default is preferred
 
 Because this is heavy data processing, taking advantage of aws elastic beanstalk services, the application was deployed on beanstalk which has the capability to scale the application and create multiple instances and load balance them and share the workload.
 
@@ -61,13 +63,8 @@ eb create
 
 eb scale 5 
 
-The above will deploy the modules. Each module will have these commands ran. However, Apache Kafka is a paid service on aws so a free 30 day trial from CloudKafka service was used for testing. The CloudKafka service works while the appplication is working on local too. That is the default. To run locally, uncomment the local configuration and comment CloudKafka. 
+The above will deploy the modules. However, Apache Kafka is a paid service on aws so a free 30 day trial from CloudKafka service was used for testing. The CloudKafka service works while the appplication is working on local too. To run on CloudKafka service  comment the local configuration and uncomment CloudKafka. 
 
-Here is the link to the aws producer:
-
-Note that you have to change one of the ports to run it on localhost because both of them are using port 5000 because of aws.
-
-http://dataengineeringengine-dev.us-east-2.elasticbeanstalk.com/api/getgithubanalysis
 
 The Json outputs provides the deliverables
 -Number of lines of code 
