@@ -27,7 +27,7 @@ public class ProducerSparkKafkaController {
 	private final Producer producer;
 	private final StorageService storageService;
 	
-	public static int gitRepositoriesSize = 0;
+	
 
 	@Autowired
 	ProducerSparkKafkaController(Producer producer, StorageService storageService) {
@@ -111,7 +111,6 @@ public class ProducerSparkKafkaController {
 
 		}
 		
-		ProducerSparkKafkaController.gitRepositoriesSize = lines2.collect().size();
 
 		for (String word : lines2.collect()) {
 
