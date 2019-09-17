@@ -1,0 +1,16 @@
+language: java
+
+before_install:
+   - gem install bundler
+
+script:
+   mvn test -DskipTests=true -B -V
+
+
+#deploy:
+  #provider: heroku
+  #api_key: 
+    #secure: $HEROKU_API_KEY
+  #app: backend-turing-ecommerce
+  #on:
+    #repo: tksilicon/backend-turing-ecommerce
