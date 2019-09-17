@@ -1,6 +1,8 @@
 # Data Engineering Challenge (Producer)
 
-[![Build Status](https://travis-ci.com/tksilicon/dataengineering-turing.svg?branch=master)](https://travis-ci.com/tksilicon/dataengineering-turing)
+[![Build Status](https://travis-ci.com/tksilicon/dataengineering-turing.svg?token=MTwBmqJPQiznnspt2qot&branch=master)](https://travis-ci.com/tksilicon/dataengineering-turing.svg?token=MTwBmqJPQiznnspt2qot&branch=master)
+
+
 
 Expectation - Obtain large amount of data and process based on given constraints. Sample file containing 100,000 github respositories were provided. Solution should include application that can run multiple nano/micro instances.
 
